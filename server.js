@@ -1,6 +1,6 @@
 const express = require("express")
 const http = require("http")
-const socket = socket(server)
+const socket = require("socket.io")
 
 const app = express()
 const server = http.createServer(app)
@@ -36,4 +36,4 @@ io.on("connection", socket => {
     })
 })
 
-server.listen(8000, () => console.log('server is running on port 8000'))
+server.listen(8888, () => console.log('server is running on port 8888'))
