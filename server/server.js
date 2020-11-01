@@ -1,3 +1,4 @@
+require("dotenv").config()
 const log4js = require("log4js")
 const express = require("express")
 const http = require("http")
@@ -54,4 +55,5 @@ io.on("connection", socket => {
     })
 })
 
-server.listen(8888, () => console.log('server is running on port 8888'))
+const port = process.env.PORT || 8888
+server.listen(port, () => console.log(`server is running on port ${port}`))
