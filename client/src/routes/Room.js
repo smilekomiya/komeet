@@ -26,13 +26,14 @@ const Room = (props) => {
                 otherUser.current = userID
             })
 
-            socketRef.current.on("other", handleRecieveCall)
+            socketRef.current.on("offer", handleRecieveCall)
 
             socketRef.current.on("answer", handleAnswer)
 
             socketRef.current.on("ice-candidate", handleNewICECandidateMsg)
         })
-    }, [])
+    })
+    
 
     function callUser(userID) {
         peerRef.current = createPeer(userID)
@@ -42,7 +43,14 @@ const Room = (props) => {
     function createPeer(userID) {
         const peer = new RTCPeerConnection({
             iceServers: [
-                
+                {
+                    urls: "stun:stun.stunprotocol.org"
+                },
+                {
+                    urls: 'turn:numb.viagenie.ca',
+                    credential: 'poiu1234',
+                    username: 'yuzuru.komiya@gmail.com'
+                },
             ]
         })
 
@@ -54,18 +62,19 @@ const Room = (props) => {
 
     function handleNegotiationNeededEvent(userID) {
         peerRef.current.createOffer().then(offer => {
-            return peerRef.current.setLocationDescription(offer)
+            return peerRef.current.setLocalDescription(offer)
         }).then(() => {
             const payload = {
                 target: userID,
                 caller: socketRef.current.id,
-                sdp: peerRef.current.locationDescription
+                sdp: peerRef.current.localDescription
             }
             socketRef.current.emit("offer", payload)
         }).catch(e => console.log(e))
     }
 
     function handleRecieveCall(incoming) {
+
         peerRef.current = createPeer()
         const desc = new RTCSessionDescription(incoming.sdp)
         peerRef.current.setRemoteDescription(desc).then(() => {
@@ -110,9 +119,14 @@ const Room = (props) => {
 
 
     return (
-        <div>
-            <video autoPlay ref={userVideo} />
-            <video autoPlay ref={partnerVideo} />
+        <div className="container">
+            <div className="videos">
+                <video autoPlay ref={userVideo} />
+                <video autoPlay ref={partnerVideo} />
+            </div>
+            <div className="chats">
+                チャットエリア
+            </div>
         </div>
     )
 }
